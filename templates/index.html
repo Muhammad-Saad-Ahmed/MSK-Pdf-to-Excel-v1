@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Excel Converter - Pakistani Banks</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-file-earmark-spreadsheet me-2"></i>
+                PDF to Excel Converter
+            </a>
+            <span class="navbar-text text-white">
+                <i class="bi bi-building me-1"></i>
+                HBL | Bank AL Habib | Meezan Bank
+            </span>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container py-5">
+        <!-- Header Section -->
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-5 fw-bold text-primary">
+                    <i class="bi bi-arrow-repeat me-2"></i>
+                    Bank Statement Converter
+                </h1>
+                <p class="lead text-muted">
+                    Convert Pakistani bank statement PDFs to structured Excel files
+                </p>
+            </div>
+        </div>
+
+        <!-- Alert Container -->
+        <div id="alert-container"></div>
+
+        <!-- Upload Section -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-cloud-upload me-2"></i>
+                            Upload PDF Statement
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Drag & Drop Area -->
+                        <div id="drop-zone" class="drop-zone">
+                            <input type="file" id="file-input" accept=".pdf" hidden>
+                            <div class="drop-zone-content">
+                                <i class="bi bi-file-earmark-pdf display-1 text-danger"></i>
+                                <p class="mt-3 mb-0">
+                                    <strong>Drag & Drop</strong> your PDF here
+                                </p>
+                                <p class="text-muted mb-3">or</p>
+                                <button type="button" class="btn btn-outline-primary" id="browse-btn">
+                                    <i class="bi bi-folder2-open me-2"></i>
+                                    Browse Files
+                                </button>
+                                <p class="text-muted small mt-3 mb-0">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Supported banks: HBL, Bank AL Habib, Meezan Bank
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Selected File Info -->
+                        <div id="file-info" class="mt-3 d-none">
+                            <div class="alert alert-info d-flex align-items-center">
+                                <i class="bi bi-file-earmark-check me-2 fs-5"></i>
+                                <div class="flex-grow-1">
+                                    <strong id="file-name"></strong>
+                                    <span id="file-size" class="text-muted ms-2"></span>
+                                </div>
+                                <button type="button" class="btn-close" id="remove-file" aria-label="Remove"></button>
+                            </div>
+                        </div>
+
+                        <!-- Convert Button -->
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="button" class="btn btn-primary btn-lg" id="convert-btn" disabled>
+                                <i class="bi bi-gear me-2"></i>
+                                Convert to Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Processing Status -->
+                <div id="processing-card" class="card shadow-lg border-0 mt-4 d-none">
+                    <div class="card-body text-center py-5">
+                        <div class="spinner-border text-primary spinner-lg mb-3" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <h5 class="text-muted">Processing your PDF...</h5>
+                        <p class="text-muted small" id="processing-status">
+                            Extracting text and detecting bank
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Success Card -->
+                <div id="success-card" class="card shadow-lg border-0 mt-4 d-none">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-check-circle me-2"></i>
+                            Conversion Successful!
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <p class="mb-2">
+                                    <strong>Detected Bank:</strong>
+                                    <span id="detected-bank" class="text-primary"></span>
+                                </p>
+                                <p class="mb-0">
+                                    <strong>Transactions Found:</strong>
+                                    <span id="transaction-count"></span>
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <a href="#" class="btn btn-success" id="download-btn">
+                                    <i class="bi bi-download me-2"></i>
+                                    Download Excel
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Section -->
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <h4 class="text-center mb-4">
+                            <i class="bi bi-stars text-warning me-2"></i>
+                            Features
+                        </h4>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="bi bi-cpu display-4 text-primary mb-3"></i>
+                                <h6 class="card-title">Auto Bank Detection</h6>
+                                <p class="card-text small text-muted">
+                                    Automatically detects HBL, Bank AL Habib, or Meezan Bank from your PDF
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="bi bi-eye display-4 text-success mb-3"></i>
+                                <h6 class="card-title">OCR Fallback</h6>
+                                <p class="card-text small text-muted">
+                                    Advanced OCR technology for image-based PDFs
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="bi bi-table display-4 text-info mb-3"></i>
+                                <h6 class="card-title">Clean Excel Output</h6>
+                                <p class="card-text small text-muted">
+                                    Structured columns with separated deposit slip numbers
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">
+                <i class="bi bi-shield-check me-2"></i>
+                Secure &bull; Your files are processed locally and deleted immediately
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // DOM Elements
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const browseBtn = document.getElementById('browse-btn');
+        const fileInfo = document.getElementById('file-info');
+        const fileName = document.getElementById('file-name');
+        const fileSize = document.getElementById('file-size');
+        const removeFileBtn = document.getElementById('remove-file');
+        const convertBtn = document.getElementById('convert-btn');
+        const processingCard = document.getElementById('processing-card');
+        const processingStatus = document.getElementById('processing-status');
+        const successCard = document.getElementById('success-card');
+        const detectedBank = document.getElementById('detected-bank');
+        const transactionCount = document.getElementById('transaction-count');
+        const downloadBtn = document.getElementById('download-btn');
+        const alertContainer = document.getElementById('alert-container');
+
+        let selectedFile = null;
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Show alert
+        function showAlert(message, type = 'danger') {
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'} me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            alertContainer.innerHTML = alertHtml;
+            // Auto-dismiss after 5 seconds for success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    const alert = alertContainer.querySelector('.alert');
+                    if (alert) {
+                        const bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }
+                }, 5000);
+            }
+        }
+
+        // Clear alerts
+        function clearAlerts() {
+            alertContainer.innerHTML = '';
+        }
+
+        // Handle file selection
+        function handleFile(file) {
+            if (!file) return;
+            
+            // Validate file type
+            if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+                showAlert('Please select a valid PDF file.', 'danger');
+                return;
+            }
+            
+            // Validate file size (16MB max)
+            if (file.size > 16 * 1024 * 1024) {
+                showAlert('File is too large. Maximum size is 16MB.', 'danger');
+                return;
+            }
+            
+            selectedFile = file;
+            fileName.textContent = file.name;
+            fileSize.textContent = `(${formatFileSize(file.size)})`;
+            fileInfo.classList.remove('d-none');
+            convertBtn.disabled = false;
+            clearAlerts();
+        }
+
+        // Drag & Drop Events
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        // Browse Button
+        browseBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // Remove File
+        removeFileBtn.addEventListener('click', () => {
+            selectedFile = null;
+            fileInput.value = '';
+            fileInfo.classList.add('d-none');
+            convertBtn.disabled = true;
+        });
+
+        // Convert Button
+        convertBtn.addEventListener('click', async () => {
+            if (!selectedFile) {
+                showAlert('Please select a PDF file first.', 'warning');
+                return;
+            }
+
+            // Hide previous results
+            successCard.classList.add('d-none');
+            clearAlerts();
+
+            // Show processing
+            processingCard.classList.remove('d-none');
+            convertBtn.disabled = true;
+
+            // Update processing status
+            const statuses = [
+                'Extracting text from PDF...',
+                'Detecting bank...',
+                'Parsing transactions...',
+                'Generating Excel file...'
+            ];
+            let statusIndex = 0;
+            const statusInterval = setInterval(() => {
+                if (statusIndex < statuses.length) {
+                    processingStatus.textContent = statuses[statusIndex];
+                    statusIndex++;
+                }
+            }, 800);
+
+            try {
+                // Create FormData
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+
+                // Send request
+                const response = await fetch('/convert', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                clearInterval(statusInterval);
+
+                if (data.success) {
+                    // Show success card
+                    detectedBank.textContent = data.bank_detected;
+                    transactionCount.textContent = data.transactions_count;
+                    downloadBtn.href = `/download/${data.download_filename}`;
+                    successCard.classList.remove('d-none');
+                    showAlert('PDF converted successfully!', 'success');
+                } else {
+                    showAlert(data.error || 'Conversion failed. Please try again.', 'danger');
+                }
+            } catch (error) {
+                clearInterval(statusInterval);
+                showAlert('Network error. Please check your connection and try again.', 'danger');
+                console.error('Error:', error);
+            } finally {
+                // Hide processing
+                processingCard.classList.add('d-none');
+                convertBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

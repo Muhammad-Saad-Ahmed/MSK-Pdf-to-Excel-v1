@@ -1,0 +1,332 @@
+================================================================================
+PDF STRUCTURE ANALYSIS
+================================================================================
+
+Total Pages: 50
+
+
+================================================================================
+PAGE 1
+================================================================================
+
+--- RAW TEXT ---
+YOUR ACCOUNT STATEMENT AACCCCOOUUNNTT NNOO : 22552255--7700001144000077--0033 OF
+FOR THE PERIOD ENDING: DEC01,2025 TO JAN31,2026 HBL TOWER BRANCH BRANCH
+FC ENTERPRISES ACCOUNT TYPE : CURRENT A/C
+ROOM NO 203 2ND FLOOR CURRENCY : Pakistan Rupee
+COTTON EXCHANGE BUILDING PRINTING DATE : 24-02-26
+I.I CHUNDRIGAR ROAD KARACHI FREQUENCY : INTERIM / DUPLICATE
+PK PAGE NO : 1
+USER : AMO601
+-----------------------------------------------------------------------------------------------------------------
+|DATE |VALUE |PARTICULARS | DEBIT| CREDIT| BALANCE |
+|-------|-------|-----------------------------------|------------------|------------------|---------------------|
+| | |BROUGHT FORWARD | | | 352,358.66 |
+|01DEC25| |Online Deposit 25687849 | | 158,000.00| 510,358.66 |
+| | |MUHAMMAD KAMRAN | | | |
+| | |A25207000405603 | | | |
+| | |03101032401 | | | |
+|01DEC25| |Online Deposit 33631561 | | 68,910.00| 579,268.66 |
+| | |5027 | | | |
+| | |SAFDER TAREEN | | | |
+| | |C4210118421153 | | | |
+| | |03453375057 17| | | |
+|01DEC25| |Online Deposit 33631750 | | 56,230.00| 635,498.66 |
+| | |5027 | | | |
+| | |SAFDER TAREEN | | | |
+| | |C4210118421153 | | | |
+| | |03453375057 17| | | |
+|01DEC25| |Online Deposit 33767322 | | 89,000.00| 724,498.66 |
+| | |5425 | | | |
+| | |KAMRAN | | | |
+| | |A25207000405603 | | | |
+| | |03101032401 | | | |
+|01DEC25| |Funds Transfer 9105640104101201 | | 200,000.00| 924,498.66 |
+| | |FRM MEZ 99740104138245 910564910564| | | |
+| | |Thru 1-LINK SWITCH | | | |
+| | |9999 MBL | | | |
+| | |PK20MEZN0099740104138245 MISBAH ZAE| | | |
+|01DEC25| |CHQ Dr. Online 00000594 | 500,000.00| | 424,498.66 |
+|02DEC25| |Online Deposit 28246481 | | 48,000.00| 472,498.66 |
+| | |BURHAN | | | |
+| | |C4240196484865 | | | |
+| | |03192540903 17| | | |
+|02DEC25| |Online Deposit 28246482 | | 40,000.00| 512,498.66 |
+| | |BURHAN | | | |
+| | |C4240196484865 | | | |
+| | |03192540903 17| | | |
+--------------------------------------------Continue on next page------------------------------------------------
+This is a system generated account statement and does not require a signature.
+
+--- TABLES ---
+
+--- WORDS (first 50) ---
+x=14, y=138: YOUR
+x=38, y=138: ACCOUNT
+x=77, y=138: STATEMENT
+x=336, y=138: AACCCCOOUUNNTT
+x=374, y=138: NNOO
+x=403, y=138: :
+x=413, y=138: 22552255--7700001144000077--0033
+x=494, y=138: OF
+x=14, y=150: FOR
+x=34, y=150: THE
+x=53, y=150: PERIOD
+x=86, y=150: ENDING:
+x=125, y=150: DEC01,2025
+x=178, y=150: TO
+x=192, y=150: JAN31,2026
+x=413, y=150: HBL
+x=432, y=150: TOWER
+x=461, y=150: BRANCH
+x=494, y=150: BRANCH
+x=14, y=174: FC
+x=29, y=174: ENTERPRISES
+x=336, y=174: ACCOUNT
+x=374, y=174: TYPE
+x=403, y=174: :
+x=413, y=174: CURRENT
+x=451, y=174: A/C
+x=14, y=186: ROOM
+x=38, y=186: NO
+x=53, y=186: 203
+x=72, y=186: 2ND
+x=91, y=186: FLOOR
+x=336, y=186: CURRENCY
+x=403, y=186: :
+x=413, y=186: Pakistan
+x=456, y=186: Rupee
+x=14, y=198: COTTON
+x=48, y=198: EXCHANGE
+x=91, y=198: BUILDING
+x=336, y=198: PRINTING
+x=379, y=198: DATE
+x=403, y=198: :
+x=413, y=198: 24-02-26
+x=19, y=210: I.I
+x=38, y=210: CHUNDRIGAR
+x=91, y=210: ROAD
+x=115, y=210: KARACHI
+x=336, y=210: FREQUENCY
+x=403, y=210: :
+x=413, y=210: INTERIM
+x=451, y=210: /
+
+================================================================================
+PAGE 2
+================================================================================
+
+--- RAW TEXT ---
+YOUR ACCOUNT STATEMENT AACCCCOOUUNNTT NNOO : 22552255--7700001144000077--0033 OF
+FOR THE PERIOD ENDING: DEC01,2025 TO JAN31,2026 HBL TOWER BRANCH BRANCH
+FC ENTERPRISES ACCOUNT TYPE : CURRENT A/C
+ROOM NO 203 2ND FLOOR CURRENCY : Pakistan Rupee
+COTTON EXCHANGE BUILDING PRINTING DATE : 24-02-26
+I.I CHUNDRIGAR ROAD KARACHI FREQUENCY : INTERIM / DUPLICATE
+PK PAGE NO : 2
+USER : AMO601
+-----------------------------------------------------------------------------------------------------------------
+|DATE |VALUE |PARTICULARS | DEBIT| CREDIT| BALANCE |
+|-------|-------|-----------------------------------|------------------|------------------|---------------------|
+| | |BROUGHT FORWARD | | | 512,498.66 |
+|02DEC25| |Online Deposit 31064582 | | 113,000.00| 625,498.66 |
+| | |5425 | | | |
+| | |KAMRAN | | | |
+| | |A25207000405603 | | | |
+| | |03101032401 | | | |
+|02DEC25| |Online Deposit 33631786 | | 32,790.00| 658,288.66 |
+| | |SAFDER TAREEN | | | |
+| | |C4210118421153 | | | |
+| | |03453375057 17| | | |
+|02DEC25| |Funds Transfer 5037090944171202 | | 100,000.00| 758,288.66 |
+| | |FRM HBL 05417987670601 880201718550| | | |
+| | |Thru Digital Banking | | | |
+| | |PK29HABB0005417987670601 MAHWISH RA| | | |
+|02DEC25| |CHQ Dr. Online 00000596 | 500,000.00| | 258,288.66 |
+|03DEC25| |Online Deposit 20835032 | | 17,720.00| 276,008.66 |
+| | |MUHAMMAD UMER | | | |
+| | |C4210134552929 | | | |
+| | |03012952182 08| | | |
+|03DEC25| |Online Deposit 30661393 | | 23,500.00| 299,508.66 |
+| | |BURHAN | | | |
+| | |C4240196484865 | | | |
+| | |03192540903 17| | | |
+|03DEC25| |Online Deposit 31144492 | | 44,050.00| 343,558.66 |
+| | |5392 | | | |
+| | |ATIF AHMED | | | |
+| | |C4240155156825 | | | |
+| | |03113285922 17| | | |
+|03DEC25| |Online Deposit 33631805 | | 32,650.00| 376,208.66 |
+| | |5027 | | | |
+| | |SAFDER TAREEN | | | |
+| | |C4210118421153 | | | |
+| | |03453375057 17| | | |
+--------------------------------------------Continue on next page------------------------------------------------
+This is a system generated account statement and does not require a signature.
+
+--- TABLES ---
+
+--- WORDS (first 50) ---
+x=14, y=138: YOUR
+x=38, y=138: ACCOUNT
+x=77, y=138: STATEMENT
+x=336, y=138: AACCCCOOUUNNTT
+x=374, y=138: NNOO
+x=403, y=138: :
+x=413, y=138: 22552255--7700001144000077--0033
+x=494, y=138: OF
+x=14, y=150: FOR
+x=34, y=150: THE
+x=53, y=150: PERIOD
+x=86, y=150: ENDING:
+x=125, y=150: DEC01,2025
+x=178, y=150: TO
+x=192, y=150: JAN31,2026
+x=413, y=150: HBL
+x=432, y=150: TOWER
+x=461, y=150: BRANCH
+x=494, y=150: BRANCH
+x=14, y=174: FC
+x=29, y=174: ENTERPRISES
+x=336, y=174: ACCOUNT
+x=374, y=174: TYPE
+x=403, y=174: :
+x=413, y=174: CURRENT
+x=451, y=174: A/C
+x=14, y=186: ROOM
+x=38, y=186: NO
+x=53, y=186: 203
+x=72, y=186: 2ND
+x=91, y=186: FLOOR
+x=336, y=186: CURRENCY
+x=403, y=186: :
+x=413, y=186: Pakistan
+x=456, y=186: Rupee
+x=14, y=198: COTTON
+x=48, y=198: EXCHANGE
+x=91, y=198: BUILDING
+x=336, y=198: PRINTING
+x=379, y=198: DATE
+x=403, y=198: :
+x=413, y=198: 24-02-26
+x=19, y=210: I.I
+x=38, y=210: CHUNDRIGAR
+x=91, y=210: ROAD
+x=115, y=210: KARACHI
+x=336, y=210: FREQUENCY
+x=403, y=210: :
+x=413, y=210: INTERIM
+x=451, y=210: /
+
+================================================================================
+PAGE 3
+================================================================================
+
+--- RAW TEXT ---
+YOUR ACCOUNT STATEMENT AACCCCOOUUNNTT NNOO : 22552255--7700001144000077--0033 OF
+FOR THE PERIOD ENDING: DEC01,2025 TO JAN31,2026 HBL TOWER BRANCH BRANCH
+FC ENTERPRISES ACCOUNT TYPE : CURRENT A/C
+ROOM NO 203 2ND FLOOR CURRENCY : Pakistan Rupee
+COTTON EXCHANGE BUILDING PRINTING DATE : 24-02-26
+I.I CHUNDRIGAR ROAD KARACHI FREQUENCY : INTERIM / DUPLICATE
+PK PAGE NO : 3
+USER : AMO601
+-----------------------------------------------------------------------------------------------------------------
+|DATE |VALUE |PARTICULARS | DEBIT| CREDIT| BALANCE |
+|-------|-------|-----------------------------------|------------------|------------------|---------------------|
+| | |BROUGHT FORWARD | | | 376,208.66 |
+|03DEC25| |Online Deposit 33632000 | | 37,650.00| 413,858.66 |
+| | |SAFDER TAREEN | | | |
+| | |C4210118421153 | | | |
+| | |03453375057 17| | | |
+|03DEC25| |Funds Transfer 1564111938541203 | | 24,125.00| 437,983.66 |
+| | |FRM HBL 08787900533003 880305427715| | | |
+| | |Thru Digital Banking | | | |
+| | |PK21HABB0008787900533003 SALMAN M K| | | |
+|03DEC25| |Funds Transfer 1761891913071203 | | 67,000.00| 504,983.66 |
+| | |FRM HBL 08787900533003 880300733117| | | |
+| | |Thru Digital Banking | | | |
+| | |PK21HABB0008787900533003 SALMAN M K| | | |
+|04DEC25| |Online Deposit 28028030 | | 1,413,500.00| 1,918,483.66 |
+| | |UMAIR | | | |
+| | |A05267900632103 | | | |
+| | |03352289893 | | | |
+|04DEC25| |Online Deposit 30314400 | | 36,000.00| 1,954,483.66 |
+| | |5425 | | | |
+| | |KAMRAN | | | |
+| | |A25207000405603 | | | |
+| | |03101032401 | | | |
+|04DEC25| |Online Deposit 31064583 | | 86,000.00| 2,040,483.66 |
+| | |5425 | | | |
+| | |KAMRAN | | | |
+| | |A25207000405603 | | | |
+| | |03101032401 | | | |
+|04DEC25| |Online Deposit 31144472 | | 44,600.00| 2,085,083.66 |
+| | |5392 | | | |
+| | |ATIF AHMED | | | |
+| | |C4240155156825 | | | |
+| | |03113285922 08| | | |
+|04DEC25| |Online Deposit 56284025 | | 35,400.00| 2,120,483.66 |
+| | |SAFDER TAREEN | | | |
+| | |C4210118421153 | | | |
+| | |03453375057 17| | | |
+--------------------------------------------Continue on next page------------------------------------------------
+This is a system generated account statement and does not require a signature.
+
+--- TABLES ---
+
+--- WORDS (first 50) ---
+x=14, y=138: YOUR
+x=38, y=138: ACCOUNT
+x=77, y=138: STATEMENT
+x=336, y=138: AACCCCOOUUNNTT
+x=374, y=138: NNOO
+x=403, y=138: :
+x=413, y=138: 22552255--7700001144000077--0033
+x=494, y=138: OF
+x=14, y=150: FOR
+x=34, y=150: THE
+x=53, y=150: PERIOD
+x=86, y=150: ENDING:
+x=125, y=150: DEC01,2025
+x=178, y=150: TO
+x=192, y=150: JAN31,2026
+x=413, y=150: HBL
+x=432, y=150: TOWER
+x=461, y=150: BRANCH
+x=494, y=150: BRANCH
+x=14, y=174: FC
+x=29, y=174: ENTERPRISES
+x=336, y=174: ACCOUNT
+x=374, y=174: TYPE
+x=403, y=174: :
+x=413, y=174: CURRENT
+x=451, y=174: A/C
+x=14, y=186: ROOM
+x=38, y=186: NO
+x=53, y=186: 203
+x=72, y=186: 2ND
+x=91, y=186: FLOOR
+x=336, y=186: CURRENCY
+x=403, y=186: :
+x=413, y=186: Pakistan
+x=456, y=186: Rupee
+x=14, y=198: COTTON
+x=48, y=198: EXCHANGE
+x=91, y=198: BUILDING
+x=336, y=198: PRINTING
+x=379, y=198: DATE
+x=403, y=198: :
+x=413, y=198: 24-02-26
+x=19, y=210: I.I
+x=38, y=210: CHUNDRIGAR
+x=91, y=210: ROAD
+x=115, y=210: KARACHI
+x=336, y=210: FREQUENCY
+x=403, y=210: :
+x=413, y=210: INTERIM
+x=451, y=210: /
+
+================================================================================
+ANALYSIS COMPLETE
+================================================================================
