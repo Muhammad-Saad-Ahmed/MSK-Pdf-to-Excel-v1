@@ -1,5 +1,5 @@
-# PDF to Excel Converter - Dockerfile
-# Production-ready container for Pakistani Bank Statement Converter
+# Hugging Face Spaces Dockerfile
+# PDF to Excel Converter - Pakistani Banks
 
 FROM python:3.11-slim
 
@@ -7,7 +7,8 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PIP_NO_CACHE_DIR=1
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+ENV GRADIO_SERVER_NAME="0.0.0.0"
+ENV GRADIO_SERVER_PORT="7860"
 
 # Set working directory
 WORKDIR /app
@@ -40,12 +41,7 @@ COPY static/ static/
 # Create uploads directory
 RUN mkdir -p uploads && chmod 755 uploads
 
-# Create non-root user for security
-RUN useradd --create-home --shell /bin/bash appuser && \
-    chown -R appuser:appuser /app
-USER appuser
-
-# Expose port
+# Expose port (Hugging Face uses 7860 for Gradio, but we use Flask on 5000)
 EXPOSE 5000
 
 # Health check
