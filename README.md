@@ -1,109 +1,97 @@
 # PDF to Excel Converter - Pakistani Banks
 
-A production-ready web application that converts Pakistani bank statement PDFs into structured Excel files.
+A complete web application that converts Pakistani bank statement PDFs into structured Excel files.
 
-## Supported Banks
+## 🏦 Supported Banks
 
-- **Habib Bank Limited (HBL)**
-- **Bank AL Habib**
-- **Meezan Bank**
+- ✅ **Habib Bank Limited (HBL)**
+- ✅ **Bank AL Habib**
+- ✅ **Meezan Bank**
 
-## Features
+## ✨ Features
 
-- ✅ Auto bank detection from PDF content
-- ✅ Drag & Drop PDF upload
-- ✅ OCR fallback for image-based PDFs
-- ✅ Deposit slip number splitting (up to 4 columns)
-- ✅ Clean Excel export with structured columns
-- ✅ Modern Bootstrap 5 UI
-- ✅ Secure file handling
-- ✅ Docker support
+- **Auto Bank Detection** - Automatically detects bank from PDF content
+- **OCR Fallback** - Advanced OCR for image-based/scanned PDFs
+- **Smart Number Extraction** - Extracts deposit slip numbers, branch codes, alphanumeric codes
+- **Clean Excel Output** - Structured columns with proper formatting
+- **Modern UI** - Bootstrap 5 responsive design
+- **Secure File Handling** - File validation, secure naming, auto-cleanup
 
-## Installation
+## 📁 Excel Output Format
+
+### Meezan Bank
+| Date | Particulars1 | Particulars2 | Particulars3 | Particulars4 | Credit | Debit | Bank |
+|------|--------------|--------------|--------------|--------------|--------|-------|------|
+| 2025-12-02 | 1042 | 13D | 2 | 4171966 | 2250000 | 0 | Meezan Bank |
+
+### HBL / Bank AL Habib
+| Date | Particulars1 | Particulars2 | Particulars3 | Particulars4 | Credit | Debit | Bank |
+|------|--------------|--------------|--------------|--------------|--------|-------|------|
+| 2025-12-01 | Online | Deposit | 25687849 | MUHAMMAD | 158000 | 0 | Habib Bank Limited |
+
+## 🚀 Installation
 
 ### Prerequisites
 
-- Python 3.10 or higher
-- pip (Python package manager)
+1. **Python 3.10+**
+2. **Tesseract OCR** - [Download](https://github.com/UB-Mannheim/tesseract/wiki)
+3. **Poppler** - [Download](https://github.com/oschwartz10612/poppler-windows/releases)
 
-### 1. Install Tesseract OCR
-
-**Windows:**
-1. Download installer from: https://github.com/UB-Mannheim/tesseract/wiki
-2. Run the installer (default location: `C:\Program Files\Tesseract-OCR`)
-3. Add Tesseract to system PATH or set environment variable:
-   ```
-   setx TESSDATA_PREFIX "C:\Program Files\Tesseract-OCR\tessdata"
-   ```
-
-**Linux (Ubuntu/Debian):**
-```bash
-sudo apt-get update
-sudo apt-get install -y tesseract-ocr poppler-utils
-```
-
-**macOS:**
-```bash
-brew install tesseract poppler
-```
-
-### 2. Install Python Dependencies
+### Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Run the Application
+### Run Locally
 
 ```bash
 python app.py
 ```
 
-The application will start at: http://localhost:5000
+Access: **http://127.0.0.1:5000**
 
----
-
-## Docker Deployment
-
-### Build the Docker Image
+## 🐳 Docker Deployment
 
 ```bash
-docker build -t pdf-to-excel-converter .
+# Build image
+docker build -t pdf-excel-converter .
+
+# Run container
+docker run -p 5000:5000 pdf-excel-converter
 ```
 
-### Run the Container
+## ☁️ Cloud Deployment
+
+### Render.com (Recommended - Free)
+
+1. Push code to GitHub
+2. Go to [Render.com](https://render.com)
+3. Create New Web Service
+4. Connect GitHub repository
+5. Build Command: `pip install -r requirements.txt`
+6. Start Command: `gunicorn app:app`
+
+### Railway.app
 
 ```bash
-docker run -p 5000:5000 pdf-to-excel-converter
+npm install -g @railway/cli
+railway login
+railway up
 ```
 
-### Using Docker Compose
+## 📊 API Endpoints
 
-Create `docker-compose.yml`:
-```yaml
-version: '3.8'
-services:
-  pdf-converter:
-    build: .
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./uploads:/app/uploads
-    restart: unless-stopped
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Main UI page |
+| POST | `/convert` | Upload and convert PDF |
+| GET | `/download/<filename>` | Download converted Excel |
 
-Run with:
-```bash
-docker-compose up -d
-```
-
----
-
-## Project Structure
+## 📋 Project Structure
 
 ```
 project/
-│
 ├── app.py                 # Flask backend application
 ├── requirements.txt       # Python dependencies
 ├── Dockerfile            # Docker configuration
@@ -114,59 +102,44 @@ project/
 └── uploads/              # Temporary file storage
 ```
 
----
-
-## Excel Output Format
-
-| Date | Slip1 | Slip2 | Slip3 | Slip4 | Credit | Debit | Bank |
-|------|-------|-------|-------|-------|--------|-------|------|
-| 2024-01-15 | ABC123 | XYZ789 | | | 50000 | 0 | Habib Bank Limited |
-
----
-
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | Main UI page |
-| POST | `/convert` | Upload and convert PDF |
-| GET | `/download/<filename>` | Download converted Excel |
-
----
-
-## Security Features
+## 🔒 Security Features
 
 - ✅ File type validation (PDF only)
-- ✅ Secure filename generation (prevents injection)
+- ✅ Secure filename generation
 - ✅ File size limit (16MB max)
-- ✅ Automatic file cleanup after processing
-- ✅ Non-root user in Docker container
+- ✅ Automatic file cleanup
+- ✅ Non-root user in Docker
 
----
+## 🛠️ Troubleshooting
 
-## Troubleshooting
-
-### OCR Not Working
-
-Ensure Tesseract is installed and in your PATH:
+### Tesseract Not Found
 ```bash
-tesseract --version
+# Windows - Add to PATH
+setx PATH "%PATH%;C:\Program Files\Tesseract-OCR"
 ```
 
-### PDF Extraction Fails
-
-- Ensure pdfplumber is installed: `pip install pdfplumber`
-- For image-based PDFs, OCR fallback will be used automatically
+### Poppler Not Found
+```bash
+# Windows - Add to PATH
+setx PATH "%PATH%;C:\Program Files\poppler\Library\bin"
+```
 
 ### Port Already in Use
-
-Change the port in `app.py`:
 ```python
+# Change port in app.py
 app.run(debug=True, host='0.0.0.0', port=8080)
 ```
 
----
-
-## License
+## 📝 License
 
 MIT License
+
+## 👨‍💻 Author
+
+**Muhammad Saad Ahmed**
+
+GitHub: [@Muhammad-Saad-Ahmed](https://github.com/Muhammad-Saad-Ahmed)
+
+---
+
+**Built with ❤️ for Pakistani Banking Community**
