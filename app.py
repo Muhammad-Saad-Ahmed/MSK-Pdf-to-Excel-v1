@@ -6,6 +6,7 @@ Supports: HBL, Bank AL Habib, Meezan Bank
 import gc
 import os
 import re
+import signal
 import uuid
 import zipfile
 from pathlib import Path
@@ -91,7 +92,16 @@ def detect_bank(text: str) -> str:
 # PDF Extraction
 # =============================================================================
 
-CHUNK_SIZE = 35  # pages per Excel part
+CHUNK_SIZE = 35   # pages per Excel part
+PAGE_TIMEOUT = 30  # seconds before a single stuck page is skipped
+
+
+class PageTimeoutError(Exception):
+    pass
+
+
+def _timeout_handler(signum, frame):
+    raise PageTimeoutError("page extraction timed out")
 
 
 def get_pdf_page_count(pdf_path: str) -> int:
@@ -100,18 +110,28 @@ def get_pdf_page_count(pdf_path: str) -> int:
 
 
 def extract_text_with_pdfplumber(pdf_path: str, start: int = 0, end: int = None) -> str:
-    """Extract text from pages[start:end] (0-indexed). Skips broken pages."""
+    """Extract text from pages[start:end] (0-indexed).
+    Each page gets a SIGALRM watchdog so a hung pdfminer parser
+    cannot block the gunicorn worker indefinitely.
+    """
     text_content = []
     pdf = None
     try:
         pdf = pdfplumber.open(pdf_path)
         for page in pdf.pages[start:end]:
             try:
+                signal.signal(signal.SIGALRM, _timeout_handler)
+                signal.alarm(PAGE_TIMEOUT)
                 page_text = page.extract_text()
+                signal.alarm(0)  # cancel watchdog on success
                 if page_text:
                     text_content.append(page_text)
+            except PageTimeoutError:
+                signal.alarm(0)
+                continue  # pdfminer hung on this page — skip it
             except Exception:
-                continue  # skip broken page, keep going
+                signal.alarm(0)
+                continue  # any other error — skip page
             finally:
                 del page
                 gc.collect()
