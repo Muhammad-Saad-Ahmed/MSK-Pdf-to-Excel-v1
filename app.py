@@ -109,32 +109,55 @@ def get_pdf_page_count(pdf_path: str) -> int:
         return len(pdf.pages)
 
 
+def _ocr_single_page(pdf_path: str, page_1idx: int) -> str:
+    """OCR fallback for a single page (1-indexed)."""
+    try:
+        images = convert_from_path(pdf_path, dpi=150, first_page=page_1idx, last_page=page_1idx)
+        if images:
+            text = pytesseract.image_to_string(images[0], lang='eng')
+            del images
+            gc.collect()
+            return text or ''
+    except Exception:
+        pass
+    return ''
+
+
 def extract_text_with_pdfplumber(pdf_path: str, start: int = 0, end: int = None) -> str:
     """Extract text from pages[start:end] (0-indexed).
-    Each page gets a SIGALRM watchdog so a hung pdfminer parser
-    cannot block the gunicorn worker indefinitely.
+    Each page gets a SIGALRM watchdog. If pdfminer hangs on a page,
+    OCR is used for that specific page so no page is ever skipped.
     """
     text_content = []
     pdf = None
     try:
         pdf = pdfplumber.open(pdf_path)
-        for page in pdf.pages[start:end]:
+        total = len(pdf.pages)
+        end_idx = end if end is not None else total
+        page_list = pdf.pages[start:end_idx]
+
+        for rel_idx, page in enumerate(page_list):
+            abs_page_1idx = start + rel_idx + 1  # 1-indexed for pdf2image
+            page_text = None
             try:
                 signal.signal(signal.SIGALRM, _timeout_handler)
                 signal.alarm(PAGE_TIMEOUT)
                 page_text = page.extract_text()
-                signal.alarm(0)  # cancel watchdog on success
-                if page_text:
-                    text_content.append(page_text)
+                signal.alarm(0)
             except PageTimeoutError:
                 signal.alarm(0)
-                continue  # pdfminer hung on this page — skip it
+                # pdfminer hung — OCR this page so it is not lost
+                page_text = _ocr_single_page(pdf_path, abs_page_1idx)
             except Exception:
                 signal.alarm(0)
-                continue  # any other error — skip page
+                # other pdfplumber error — try OCR before giving up
+                page_text = _ocr_single_page(pdf_path, abs_page_1idx)
             finally:
                 del page
                 gc.collect()
+
+            if page_text:
+                text_content.append(page_text)
     except Exception as e:
         raise Exception(f"pdfplumber extraction failed: {str(e)}")
     finally:
