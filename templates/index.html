@@ -331,70 +331,81 @@
                 return;
             }
 
-            // Hide previous results
             successCard.classList.add('d-none');
             clearAlerts();
-
-            // Show processing
             processingCard.classList.remove('d-none');
             convertBtn.disabled = true;
+            processingStatus.textContent = 'Uploading PDF...';
 
-            // Update processing status
-            const statuses = [
-                'Extracting text from PDF...',
-                'Detecting bank...',
-                'Parsing transactions...',
-                'Generating Excel file...'
-            ];
-            let statusIndex = 0;
-            const statusInterval = setInterval(() => {
-                if (statusIndex < statuses.length) {
-                    processingStatus.textContent = statuses[statusIndex];
-                    statusIndex++;
+            let pollInterval = null;
+
+            function stopPolling() {
+                if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+                processingCard.classList.add('d-none');
+                convertBtn.disabled = false;
+            }
+
+            function showSuccess(data) {
+                detectedBank.textContent = data.bank_detected;
+                transactionCount.textContent = data.transactions_count;
+                downloadBtn.href = `/download/${data.download_filename}`;
+                if (data.is_zip) {
+                    document.getElementById('download-btn-label').textContent = 'Download ZIP';
+                    document.getElementById('parts-count').textContent = data.parts_count;
+                    document.getElementById('parts-info').style.display = '';
+                } else {
+                    document.getElementById('download-btn-label').textContent = 'Download Excel';
+                    document.getElementById('parts-info').style.display = 'none';
                 }
-            }, 800);
+                successCard.classList.remove('d-none');
+                showAlert('PDF converted successfully!', 'success');
+            }
+
+            async function pollStatus(jobId) {
+                try {
+                    const res = await fetch(`/status/${jobId}`);
+                    const data = await res.json();
+
+                    if (data.status === 'done') {
+                        stopPolling();
+                        showSuccess(data);
+                    } else if (data.status === 'error') {
+                        stopPolling();
+                        showAlert(data.error || 'Conversion failed.', 'danger');
+                    } else if (data.status === 'processing' && data.progress) {
+                        processingStatus.textContent = data.progress;
+                    } else if (data.status === 'not_found') {
+                        stopPolling();
+                        showAlert('Job not found. Please try again.', 'danger');
+                    }
+                    // queued or processing without progress — keep polling
+                } catch (err) {
+                    // network hiccup — keep polling, don't stop
+                    console.warn('Poll error:', err);
+                }
+            }
 
             try {
-                // Create FormData
                 const formData = new FormData();
                 formData.append('file', selectedFile);
 
-                // Send request
-                const response = await fetch('/convert', {
-                    method: 'POST',
-                    body: formData
-                });
-
+                const response = await fetch('/convert', { method: 'POST', body: formData });
                 const data = await response.json();
 
-                clearInterval(statusInterval);
-
-                if (data.success) {
-                    // Show success card
-                    detectedBank.textContent = data.bank_detected;
-                    transactionCount.textContent = data.transactions_count;
-                    downloadBtn.href = `/download/${data.download_filename}`;
-                    if (data.is_zip) {
-                        document.getElementById('download-btn-label').textContent = 'Download ZIP';
-                        document.getElementById('parts-count').textContent = data.parts_count;
-                        document.getElementById('parts-info').style.display = '';
-                    } else {
-                        document.getElementById('download-btn-label').textContent = 'Download Excel';
-                        document.getElementById('parts-info').style.display = 'none';
-                    }
-                    successCard.classList.remove('d-none');
-                    showAlert('PDF converted successfully!', 'success');
-                } else {
-                    showAlert(data.error || 'Conversion failed. Please try again.', 'danger');
+                if (!data.success) {
+                    stopPolling();
+                    showAlert(data.error || 'Upload failed.', 'danger');
+                    return;
                 }
+
+                processingStatus.textContent = 'Processing PDF pages...';
+                // Poll every 3 seconds
+                pollInterval = setInterval(() => pollStatus(data.job_id), 3000);
+
             } catch (error) {
-                clearInterval(statusInterval);
+                stopPolling();
                 showAlert('Network error. Please check your connection and try again.', 'danger');
                 console.error('Error:', error);
-            } finally {
-                // Hide processing
-                processingCard.classList.add('d-none');
-                convertBtn.disabled = false;
             }
         });
     </script>

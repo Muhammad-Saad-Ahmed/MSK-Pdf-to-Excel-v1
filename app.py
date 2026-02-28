@@ -7,6 +7,7 @@ import gc
 import os
 import re
 import signal
+import threading
 import uuid
 import zipfile
 from pathlib import Path
@@ -40,6 +41,9 @@ SUPPORTED_BANKS = {
     'alhabib': 'Bank AL Habib',
     'meezan': 'Meezan Bank'
 }
+
+# In-memory job store — safe with 1 gunicorn worker (single process)
+jobs: dict = {}
 
 
 # =============================================================================
@@ -603,50 +607,42 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/convert', methods=['POST'])
-def convert_pdf():
-    if 'file' not in request.files:
-        return jsonify({'success': False, 'error': 'No file uploaded'}), 400
-
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'success': False, 'error': 'No file selected'}), 400
-    if not allowed_file(file.filename):
-        return jsonify({'success': False, 'error': 'Invalid file type. Only PDF files are allowed.'}), 400
-
+def process_pdf_job(job_id: str, file_path: str):
+    """Runs in a background thread. Processes PDF and updates jobs[job_id]."""
     try:
-        safe_filename = generate_safe_filename(file.filename)
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], safe_filename)
-        file.save(file_path)
+        jobs[job_id]['status'] = 'processing'
 
         try:
             total_pages = get_pdf_page_count(file_path)
         except Exception as e:
-            os.remove(file_path)
-            return jsonify({'success': False, 'error': f'Could not read PDF: {str(e)}'}), 500
+            jobs[job_id] = {'status': 'error', 'error': f'Could not read PDF: {str(e)}'}
+            return
+
+        jobs[job_id]['total_pages'] = total_pages
 
         bank_code = None
         bank_name = None
-        all_excel_parts = []  # list of (filename, excel_bytes)
+        all_excel_parts = []
         total_transactions = 0
 
         for part_num, start in enumerate(range(0, total_pages, CHUNK_SIZE), 1):
             end = min(start + CHUNK_SIZE, total_pages)
+            jobs[job_id]['progress'] = f'Processing pages {start + 1}–{end} of {total_pages}...'
 
             try:
                 chunk_text = extract_chunk_text(file_path, start, end)
             except Exception:
                 gc.collect()
-                continue  # skip unreadable chunk
+                continue
 
             if not chunk_text or len(chunk_text.strip()) < 10:
                 continue
 
-            # Detect bank from first readable chunk only
             if bank_code is None:
                 bank_code = detect_bank(chunk_text)
                 if bank_code == 'unsupported':
-                    return jsonify({'success': False, 'error': 'Unsupported bank. Supports HBL, Bank AL Habib, Meezan Bank.'}), 400
+                    jobs[job_id] = {'status': 'error', 'error': 'Unsupported bank. Supports HBL, Bank AL Habib, Meezan Bank.'}
+                    return
                 bank_name = SUPPORTED_BANKS.get(bank_code, bank_code)
 
             try:
@@ -672,7 +668,8 @@ def convert_pdf():
                 gc.collect()
 
         if not all_excel_parts:
-            return jsonify({'success': False, 'error': 'No transactions found in the PDF.'}), 400
+            jobs[job_id] = {'status': 'error', 'error': 'No transactions found in the PDF.'}
+            return
 
         uid = uuid.uuid4().hex[:8]
 
@@ -681,38 +678,75 @@ def convert_pdf():
             out_path = os.path.join(app.config['UPLOAD_FOLDER'], out_filename)
             with open(out_path, 'wb') as f:
                 f.write(all_excel_parts[0][1])
-            return jsonify({
-                'success': True,
+            jobs[job_id] = {
+                'status': 'done',
                 'bank_detected': bank_name,
                 'transactions_count': total_transactions,
                 'parts_count': 1,
                 'download_filename': out_filename,
                 'is_zip': False
-            })
+            }
         else:
             zip_filename = f"bank_statement_{uid}.zip"
             zip_path = os.path.join(app.config['UPLOAD_FOLDER'], zip_filename)
             with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
                 for name, data in all_excel_parts:
                     zf.writestr(name, data)
-            return jsonify({
-                'success': True,
+            jobs[job_id] = {
+                'status': 'done',
                 'bank_detected': bank_name,
                 'transactions_count': total_transactions,
                 'parts_count': len(all_excel_parts),
                 'download_filename': zip_filename,
                 'is_zip': True
-            })
+            }
 
     except Exception as e:
-        return jsonify({'success': False, 'error': f'Unexpected error: {str(e)}'}), 500
+        jobs[job_id] = {'status': 'error', 'error': f'Unexpected error: {str(e)}'}
     finally:
-        if file_path and os.path.exists(file_path):
+        if os.path.exists(file_path):
             try:
                 os.remove(file_path)
             except Exception:
                 pass
         gc.collect()
+
+
+@app.route('/convert', methods=['POST'])
+def convert_pdf():
+    if 'file' not in request.files:
+        return jsonify({'success': False, 'error': 'No file uploaded'}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'success': False, 'error': 'No file selected'}), 400
+    if not allowed_file(file.filename):
+        return jsonify({'success': False, 'error': 'Invalid file type. Only PDF files are allowed.'}), 400
+
+    try:
+        safe_filename = generate_safe_filename(file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], safe_filename)
+        file.save(file_path)
+
+        job_id = uuid.uuid4().hex
+        jobs[job_id] = {'status': 'queued'}
+
+        thread = threading.Thread(target=process_pdf_job, args=(job_id, file_path), daemon=True)
+        thread.start()
+
+        # Return immediately — Render's 30s proxy timeout is no longer an issue
+        return jsonify({'success': True, 'job_id': job_id})
+
+    except Exception as e:
+        return jsonify({'success': False, 'error': f'Upload failed: {str(e)}'}), 500
+
+
+@app.route('/status/<job_id>')
+def job_status(job_id: str):
+    job = jobs.get(job_id)
+    if job is None:
+        return jsonify({'status': 'not_found'}), 404
+    return jsonify(job)
 
 
 @app.route('/download/<filename>')
@@ -721,12 +755,11 @@ def download_file(filename: str):
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         if not os.path.exists(file_path):
             return jsonify({'success': False, 'error': 'File not found'}), 404
-        return send_file(
-            file_path,
-            as_attachment=True,
-            download_name='bank_statement_output.xlsx',
-            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        )
+        if filename.endswith('.zip'):
+            mimetype = 'application/zip'
+        else:
+            mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        return send_file(file_path, as_attachment=True, download_name=filename, mimetype=mimetype)
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
