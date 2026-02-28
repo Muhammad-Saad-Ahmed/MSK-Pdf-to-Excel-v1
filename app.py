@@ -627,4 +627,5 @@ def server_error(e):
 
 if __name__ == '__main__':
     UPLOAD_FOLDER.mkdir(exist_ok=True)
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Production mode - disable debug and reloader
+    app.run(debug=False, host='0.0.0.0', port=5000, threaded=True)
