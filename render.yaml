@@ -4,13 +4,18 @@ services:
     env: python
     region: oregon
     plan: free
-    buildCommand: pip install -r requirements.txt
+    buildCommand: |
+      apt-get update
+      apt-get install -y poppler-utils tesseract-ocr libgl1 libglib2.0-0
+      pip install -r requirements.txt
     startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 app:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
       - key: WEB_CONCURRENCY
         value: 2
+      - key: PORT
+        value: 10000
     disk:
       name: uploads
       mountPath: /app/uploads
